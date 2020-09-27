@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticDemoApp.Console", "ElasticDemoApp.Console\ElasticDemoApp.Console.csproj", "{E0EE403F-FE91-4A78-A6A4-0707AF2B3570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticDemoApp", "ElasticDemoApp\ElasticDemoApp.csproj", "{6956489D-EFD7-4ECF-96F2-303F0E778D6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E0EE403F-FE91-4A78-A6A4-0707AF2B3570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0EE403F-FE91-4A78-A6A4-0707AF2B3570}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0EE403F-FE91-4A78-A6A4-0707AF2B3570}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0EE403F-FE91-4A78-A6A4-0707AF2B3570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6956489D-EFD7-4ECF-96F2-303F0E778D6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6956489D-EFD7-4ECF-96F2-303F0E778D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6956489D-EFD7-4ECF-96F2-303F0E778D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6956489D-EFD7-4ECF-96F2-303F0E778D6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B7EE5952-9691-4699-AE4E-B932BBDB25EE}
+		SolutionGuid = {6A88870C-AA2F-4D9B-92E9-EEBFFBB33513}
 	EndGlobalSection
 EndGlobal
