@@ -19,14 +19,17 @@ namespace ElasticDemoApp
                 var client = new ElasticClient(setting);
 
                 //Insert Posts
-                InsertDocument(client);
-
+                //InsertDocument(client);
 
                 //queries
-                MatchQuery(client, "post");// or search-word = async
+                // MatchQuery(client, "post async");// or use one search-word = async                
+                //MatchPhraseQuery(client, "async programming");// NoSQL
+                
+                TermRangeQuery(client, "2017-10-29");
+
                 // TermQuery(client, "azure");
-                //MatchPhraseQuery(client, "NoSQL");// NoSQL
-                //TermRangeQuery(client, "2017-10-29");
+
+
 
             }
             catch (Exception ex)
@@ -78,9 +81,7 @@ namespace ElasticDemoApp
         {
             Console.WriteLine($"**************Executing [Match] Query**************");
 
-            var searchResponse = client.Search<Post>(s => s
-                                        .From(0)
-                                        .Size(10)
+            var searchResponse = client.Search<Post>(s => s                                     
                                         .Query(q => q
                                                 .Match(m => m
                                                 .Field(f => f.PostContent)
