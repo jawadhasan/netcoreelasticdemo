@@ -7,5 +7,7 @@ Working with Elastic Search
 
 Application built using .NET Core to work with ElasticSearch
 
+https://hexquote.com/elasticsearch-with-net-core/
+
 
 

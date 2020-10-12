@@ -21,14 +21,17 @@ namespace ElasticDemoApp
                 //Insert Posts
                 //InsertDocument(client);
 
-                //queries
-                // MatchQuery(client, "post async");// or use one search-word = async                
-                //MatchPhraseQuery(client, "async programming");// NoSQL
-                
-                TermRangeQuery(client, "2017-10-29");
+                //Perform Match Query
+                //MatchQuery(client, "async");// or use one search-word = REST 
 
-                // TermQuery(client, "azure");
+                //Perform Match-Phrase Query
+                //MatchPhraseQuery(client, "REST API");
 
+                //Perform TermRange Query
+                //TermRangeQuery(client, "2015-10-05");
+
+                //Perform Term Query
+                //TermQuery(client, "azure");
 
 
             }
@@ -38,6 +41,11 @@ namespace ElasticDemoApp
                 throw;
             }
         }
+         
+       
+
+
+
 
         static void TermQuery(ElasticClient client, string queryString)
         {
@@ -124,16 +132,16 @@ namespace ElasticDemoApp
             //Prepare Entry
             var post = new Post()
             {
-                PostDate = new DateTime(2015,05,12),
-                PostName = "2015 OldPost again",
-                PostType = "News",
-                PostContent = "REST Services Discussion"
+                PostDate = new DateTime(2020,10,11),
+                PostName = "REST Async api",
+                PostType = "Communication",
+                PostContent = "REST Async API Discussion"
             };          
 
             //Save to Elastic-Search Index
             var indexResponse = client.IndexDocument(post);
 
-            Console.WriteLine(indexResponse.DebugInformation);
+            //Console.WriteLine(indexResponse.DebugInformation);
         }
 
 
