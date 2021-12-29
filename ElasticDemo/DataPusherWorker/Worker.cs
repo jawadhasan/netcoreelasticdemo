@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +20,7 @@ namespace DataPusherWorker
             var node = new Uri("http://localhost:9200");
 
             var setting = new ConnectionSettings(node)
-                .DefaultIndex("dashboard");
+                .DefaultIndex("demodevicedata");
 
             _elasticClient = new ElasticClient(setting);
         }
@@ -39,10 +37,10 @@ namespace DataPusherWorker
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                var deviceData = MockDeviceDataService.GetDeviceData();
+                var deviceData = MockDeviceDataService.GetMockData();
                 var indexResponse = _elasticClient.IndexDocument(deviceData);
                
-                Console.WriteLine(indexResponse.DebugInformation);
+                //Console.WriteLine(indexResponse.DebugInformation);
 
 
                 await Task.Delay(5000, stoppingToken);
