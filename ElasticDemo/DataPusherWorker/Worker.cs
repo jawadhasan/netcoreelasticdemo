@@ -1,50 +1,86 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using IotFleet;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nest;
 
 namespace DataPusherWorker
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly ElasticClient _elasticClient;
+       
+        private readonly Fleet _fleet;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, Fleet fleet)
         {
             _logger = logger;
-
-            //1. Setup Connection and ElasticClient
-            var node = new Uri("http://localhost:9200");
-
-            var setting = new ConnectionSettings(node)
-                .DefaultIndex("demodevicedata");
-
-            _elasticClient = new ElasticClient(setting);
-        }
-
-
-        public void test()
-        {
-
+            _fleet = fleet;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+
+            var tasksList = new List<Task>();
+            
+            var vehiclesList = InMemoryVehiclesData.GetTripConfigs(); //TODO: e.g. can load from DB
+
+            foreach (var vehicle in vehiclesList)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-
-                var deviceData = MockDeviceDataService.GetMockData();
-                var indexResponse = _elasticClient.IndexDocument(deviceData);
-               
-                //Console.WriteLine(indexResponse.DebugInformation);
-
-
-                await Task.Delay(5000, stoppingToken);
+                var task = Task.Factory.StartNew(async() => await _fleet.RegisterVehicle(vehicle, registeredCallbackHandler, HandleEvent), stoppingToken);
+                tasksList.Add(task);
             }
+
+            _logger.LogWarning($"VehicleCount: {_fleet.GetVehicles().Count}");
+        }
+
+
+        //EventHandling and Callback
+        private void HandleEvent(object sender, RideData e)
+        {
+            _logger.LogDebug($"worker event-Handler {e.LicensePlate}");
+        }
+        private void registeredCallbackHandler(object sender, RegisterInfo e)
+        {
+            _logger.LogWarning($"worker callback executed! license: {e.LicensePlate}");
+        }
+
+
+        private void Testingcode()
+        {
+            //yield-return version
+            //foreach (var rideData in _rideSimulator.GenerateRideData("ABC000"))
+            //{
+            //    //received via yeild return==> 
+
+            //    _logger.LogInformation($"TS: {rideData.Ts}, LicensePlate: {rideData.LicensePlate}, RideId: {rideData.RideId}, LatLong:[{rideData.Lat} {rideData.Lon}], Temp:{rideData.Temperature}");
+
+            //    //await  _elasticClient.IndexDocumentAsync(rideData, stoppingToken);
+
+            //}
+
+
+
+
+            ////prepare json
+            //var jsonData = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+            //{
+            //    ContractResolver = new CamelCasePropertyNamesContractResolver()
+            //});
+
+            ////publish to AWS IoT Core
+            //mqttClient.Publish("truck_sensor", Encoding.UTF8.GetBytes(jsonData));
+
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
+            //    var deviceData = MockDeviceDataService.GetMockData();
+            //    var indexResponse = _elasticClient.IndexDocument(deviceData);
+
+            //    await Task.Delay(5000, stoppingToken);
+            //}
         }
     }
 }
