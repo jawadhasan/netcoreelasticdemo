@@ -10,18 +10,19 @@ namespace IotFleet
         public async Task Start(VehicleData vehicleData)
         {
             TripConfigs = vehicleData;
-            await GenerateRideData(1 * 60); //1*60 = 1 minute
+            await GenerateRideData(15 * 60); //1*60 = 1 minute
         }
         private async Task GenerateRideData(int driveTime)
         {
-            var rideId = Math.Floor(new Random().NextDouble() * 1000);
+            var rnd = new Random();
+            var rideId = (int) Math.Floor(rnd.NextDouble() * 1000);
             var counter = 0;
             var endTime = DateTime.UtcNow;
 
             var sw = new Stopwatch();
             sw.Start();
 
-            var randomDelay = new Random().Next(1000, 3000);
+           
 
             while (sw.ElapsedMilliseconds < driveTime * 1000) // while (counter < driveTime)
             {
@@ -51,8 +52,8 @@ namespace IotFleet
                     Lon = currentCoordinates.Lon
                 };
                 NewDataHandler?.Invoke(this, data); //broadcast event
+                var randomDelay = rnd.Next(3000, 5000);
 
-               
                 await Task.Delay(randomDelay);
             }
         }

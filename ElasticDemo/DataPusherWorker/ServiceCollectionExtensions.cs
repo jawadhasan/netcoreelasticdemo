@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,24 @@ namespace DataPusherWorker
                 var client = new ElasticClient(settings);
 
                 services.AddSingleton<IElasticClient>(client);
+            }
+            catch (Exception ex)
+            {
+                var error = ex.Message;
+            }
+        }
+
+
+        public static void AddWebsocketclient(
+            this IServiceCollection services, IConfiguration configuration)
+        {
+            try
+            {
+                var url = configuration["socketserver:url"];
+
+                var client = new WebsocketClient(url);
+
+                services.AddSingleton(client);
             }
             catch (Exception ex)
             {

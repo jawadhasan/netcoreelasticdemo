@@ -14,15 +14,22 @@ namespace DataPusherWorker
        
         private readonly Fleet _fleet;
 
-        public Worker(ILogger<Worker> logger, Fleet fleet)
+        private readonly WebsocketClient _webSocketClient;
+
+        public Worker(ILogger<Worker> logger, Fleet fleet, WebsocketClient websocketClient)
         {
             _logger = logger;
+
             _fleet = fleet;
+
+            _webSocketClient = websocketClient;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+
+            await _webSocketClient.Connect();
 
             var tasksList = new List<Task>();
             
@@ -39,9 +46,10 @@ namespace DataPusherWorker
 
 
         //EventHandling and Callback
-        private void HandleEvent(object sender, RideData e)
+        private async void HandleEvent(object sender, RideData e)
         {
             _logger.LogDebug($"worker event-Handler {e.LicensePlate}");
+           await _webSocketClient.Save(e);
         }
         private void registeredCallbackHandler(object sender, RegisterInfo e)
         {

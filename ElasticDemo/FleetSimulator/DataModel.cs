@@ -31,7 +31,7 @@ public class VehicleData
 public class RideData
 {
     public string LicensePlate { get; set; } // PK of Master Entity
-    public double RideId { get; set; }
+    public int RideId { get; set; }
     public double Temperature { get; set; }
     public long Ts { get; set; }
     public double Lat { get; set; }

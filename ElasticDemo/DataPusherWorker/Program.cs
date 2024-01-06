@@ -15,11 +15,12 @@ namespace DataPusherWorker
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                   
+
                     //services.AddTransient<IPersistenceService, ConsolePersistence>(); //a sample persistence from simulator-library
                     services.AddTransient<IPersistenceService, ElasticPersistenceService>(); //persistence service from application; can comment above line.
 
-                  
+
+                    services.AddWebsocketclient(hostContext.Configuration); // services.AddSingleton<WebsocketClient>();
                     services.AddSingleton<Fleet>();
 
                     //services.AddSingleton<FleetSimulator>(_ => new FleetSimulator(args[0],args[1])); //to run separate ride-instanance approach
