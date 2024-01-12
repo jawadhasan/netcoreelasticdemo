@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
+using DataPusherWorker.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
@@ -37,20 +33,25 @@ namespace DataPusherWorker
         }
 
 
-        public static void AddWebsocketclient(
+        public static void AddDataProcessor(
             this IServiceCollection services, IConfiguration configuration)
         {
             try
             {
                 var url = configuration["socketserver:url"];
 
-                var client = new WebsocketClient(url);
+                //WebSocket registration
+                //var client = new WebSocketProcessor(url);
+                //services.AddSingleton<DataProcessor>(client);  //services.AddSingleton(client);
 
-                services.AddSingleton(client);
+                //Console Registration
+                services.AddSingleton<DataProcessor, ConsoleDataProcessor>();
+
             }
             catch (Exception ex)
             {
                 var error = ex.Message;
+                Console.WriteLine(ex.Message);
             }
         }
     }

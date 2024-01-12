@@ -4,8 +4,9 @@ using IotFleet;
 using Microsoft.Extensions.Logging;
 using Nest;
 
-namespace DataPusherWorker
+namespace DataPusherWorker.Services
 {
+    //Injected into Fleet
     public class ElasticPersistenceService : IPersistenceService
     {
         private readonly ILogger<ElasticPersistenceService> _logger;

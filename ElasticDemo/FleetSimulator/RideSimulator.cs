@@ -6,7 +6,8 @@ namespace IotFleet
     {
         public event EventHandler<RideData> NewDataHandler;
         protected VehicleData TripConfigs { get; private set; }
-
+        protected bool _keepRunning { get; private set; } = true;
+        
         public async Task Start(VehicleData vehicleData)
         {
             TripConfigs = vehicleData;
@@ -22,9 +23,7 @@ namespace IotFleet
             var sw = new Stopwatch();
             sw.Start();
 
-           
-
-            while (sw.ElapsedMilliseconds < driveTime * 1000) // while (counter < driveTime)
+            while (_keepRunning)//sw.ElapsedMilliseconds < driveTime * 1000
             {
                 counter++;
                 Console.WriteLine($"Key: {TripConfigs.LicensePlate}: Counter: {counter}");
@@ -56,6 +55,13 @@ namespace IotFleet
 
                 await Task.Delay(randomDelay);
             }
+        }
+
+        public async Task Stop()
+        {
+            _keepRunning = false;
+            await Task.FromResult(true);
+
         }
 
     }

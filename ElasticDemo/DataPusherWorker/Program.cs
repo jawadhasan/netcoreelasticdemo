@@ -1,3 +1,5 @@
+using DataPusherWorker.Services;
+using DataPusherWorker.Settings;
 using IotFleet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,17 +17,15 @@ namespace DataPusherWorker
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.Configure<SQSSettings>(hostContext.Configuration.GetSection("Queueing"));
+                    services.AddSingleton<IEventConsumer, SQSEventConsumer>();
 
                     //services.AddTransient<IPersistenceService, ConsolePersistence>(); //a sample persistence from simulator-library
-                    services.AddTransient<IPersistenceService, ElasticPersistenceService>(); //persistence service from application; can comment above line.
-
-
-                    services.AddWebsocketclient(hostContext.Configuration); // services.AddSingleton<WebsocketClient>();
-                    services.AddSingleton<Fleet>();
-
-                    //services.AddSingleton<FleetSimulator>(_ => new FleetSimulator(args[0],args[1])); //to run separate ride-instanance approach
-
+                    services.AddSingleton<IPersistenceService, ElasticPersistenceService>(); //persistence service from application; can comment above line.
+                    services.AddDataProcessor(hostContext.Configuration);//e.g. websocketProcessor, consoleProcessor etc.
                     services.AddElasticsearch(hostContext.Configuration);//see extension method
+
+                    services.AddSingleton<Fleet>();  //services.AddSingleton<FleetSimulator>(_ => new FleetSimulator(args[0],args[1])); //to run separate ride-instanance approach
 
                     services.AddHostedService<Worker>();
                 });

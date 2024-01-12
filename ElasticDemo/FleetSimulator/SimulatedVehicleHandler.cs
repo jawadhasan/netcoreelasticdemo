@@ -4,6 +4,7 @@
     {
         public event EventHandler<RideData> DataHandler;
         Task Start(VehicleData vehicleData);
+        Task Stop();
     }
 
     public class SimulatedVehicleHandler : IThingHandler
@@ -36,6 +37,11 @@
         {
             VehicleData = vehicleData;
             await _thing.Start(VehicleData);
+        }
+
+        public async Task Stop()
+        {
+            await _thing.Stop();
         }
 
     }

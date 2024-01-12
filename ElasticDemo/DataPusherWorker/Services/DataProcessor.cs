@@ -8,20 +8,40 @@ using IotFleet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DataPusherWorker
+namespace DataPusherWorker.Services
 {
-    public class WebsocketClient
+    //worker's services
+
+    public abstract class DataProcessor
+    {
+        public abstract Task Process(RideData rideData);
+        public abstract Task Setup();
+    }
+    public class ConsoleDataProcessor : DataProcessor
+    {
+        public override Task Process(RideData rideData)
+        {
+            Console.WriteLine($"ConsoleDataProcessor.Process Called {rideData.LicensePlate}: {rideData.Temperature}");
+            return Task.CompletedTask;
+        }
+        public override Task Setup()
+        {
+            Console.WriteLine($"ConsoleDataProcessor Setup Called");
+            return Task.CompletedTask;
+        }
+    }
+    public class WebSocketProcessor : DataProcessor
     {
         private readonly Uri _socketServer;
 
         private readonly ClientWebSocket _socket = new();
 
-        public WebsocketClient(string url)
+        public WebSocketProcessor(string url)
         {
             _socketServer = new Uri(url);
         }
 
-        public async Task Connect()
+        public override async Task Setup()
         {
             try
             {
@@ -34,7 +54,7 @@ namespace DataPusherWorker
             }
         }
 
-        public async Task Save(RideData rideData)
+        public override async Task Process(RideData rideData)
         {
             try
             {
@@ -48,21 +68,18 @@ namespace DataPusherWorker
             {
                 Console.WriteLine($"ERROR {e.Message}");
             }
-
         }
-
 
         private async Task Send(string data)
         {
 
             await _socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true,
                 CancellationToken.None);
-
-
         }
     }
 
-    public class WebsocketService1
+
+    public class SampleWebsocketService
     {
         private static readonly string Connection = "connectionstring";
 
@@ -111,4 +128,5 @@ namespace DataPusherWorker
             };
         }
     }
+
 }

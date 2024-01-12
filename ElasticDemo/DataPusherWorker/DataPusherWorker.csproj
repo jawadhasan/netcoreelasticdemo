@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.109" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="NEST" Version="7.17.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

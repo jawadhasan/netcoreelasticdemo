@@ -7,7 +7,6 @@ public interface IPersistenceService
     public Task Save(RideData rideData);
 }
 
-
 //sample persistence
 public class ConsolePersistence : IPersistenceService
 {
@@ -19,6 +18,7 @@ public class ConsolePersistence : IPersistenceService
     }
 }
 
+
 public class VehicleData
 {
     public string LicensePlate { get; set; }
@@ -26,8 +26,6 @@ public class VehicleData
     public Coordinates EndCoordinates { get; set; }
     public double Temperature { get; set; }
 }
-
-
 public class RideData
 {
     public string LicensePlate { get; set; } // PK of Master Entity
