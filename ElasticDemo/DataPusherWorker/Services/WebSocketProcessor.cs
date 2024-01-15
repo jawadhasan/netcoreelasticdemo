@@ -8,60 +8,57 @@ using IotFleet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DataPusherWorker.Services
+namespace DataPusherWorker.Services;
+
+public class WebSocketProcessor : IDataProcessor
 {
-    //worker's services
+    private readonly Uri _socketServer;
 
+    private readonly ClientWebSocket _socket = new();
 
-    public class WebSocketProcessor : IDataProcessor
+    public WebSocketProcessor(string url)
     {
-        private readonly Uri _socketServer;
+        _socketServer = new Uri(url);
+    }
 
-        private readonly ClientWebSocket _socket = new();
-
-        public WebSocketProcessor(string url)
+    public async Task Setup()
+    {
+        try
         {
-            _socketServer = new Uri(url);
+            await _socket.ConnectAsync(_socketServer, CancellationToken.None);
+
         }
-
-        public async Task Setup()
+        catch (Exception ex)
         {
-            try
-            {
-                await _socket.ConnectAsync(_socketServer, CancellationToken.None);
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERROR - {ex.Message}");
-            }
-        }
-
-        public async Task Process(RideData rideData)
-        {
-            try
-            {
-                var json = JsonConvert.SerializeObject(rideData, Formatting.None, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
-                await Send(json);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"ERROR {e.Message}");
-            }
-        }
-
-        private async Task Send(string data)
-        {
-
-            await _socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true,
-                CancellationToken.None);
+            Console.WriteLine($"ERROR - {ex.Message}");
         }
     }
 
+    public async Task Process(ThingData thingData)
+    {
+        try
+        {
+            var json = JsonConvert.SerializeObject(thingData, Formatting.None, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            await Send(json);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"ERROR {e.Message}");
+        }
+    }
 
+    private async Task Send(string data)
+    {
+
+        await _socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true,
+            CancellationToken.None);
+    }
+
+
+    #region samplecode
     public class SampleWebsocketService
     {
         private static readonly string Connection = "connectionstring";
@@ -112,4 +109,5 @@ namespace DataPusherWorker.Services
         }
     }
 
+    #endregion
 }

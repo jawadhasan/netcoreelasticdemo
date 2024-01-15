@@ -14,15 +14,15 @@
             _dataProcessor = dataProcessor;
         }
 
-        public async Task RegisterVehicle(VehicleData vehicleData, Action<object, RegisterInfo> registeredCallBack, EventHandler<RideData> eventHandler)
+        public async Task RegisterThing(VehicleData vehicleData, Action<object, RegisterInfo> registeredCallBack, EventHandler<ThingData> eventHandler)
         {
 
             if (!_handlers.ContainsKey(vehicleData.LicensePlate))
             {
 
-                var thingHandler = new SimulatedVehicleHandler(); //need to replace with original IOT-Handler
+                var thingHandler = new SimulatedThingHandler(); //need to replace with original IOT-Handler
 
-                thingHandler.DataHandler += VehicleThingRideDataChanged; //local handler subscription
+                thingHandler.DataHandler += ThingDataChanged; //local handler subscription
 
                 thingHandler.DataHandler += eventHandler; //external handler example
 
@@ -43,19 +43,19 @@
             }
         }
 
-        private async void VehicleThingRideDataChanged(object sender, RideData e)
+        private async void ThingDataChanged(object sender, ThingData e)
         {
             await _dataProcessor.Process(e);
         }
 
 
-        public bool UnRegisterVehicle(string licensePlate, EventHandler<RideData> eventHandler)
+        public bool UnRegisterThing(string licensePlate, EventHandler<ThingData> eventHandler)
         {
             if (_handlers.ContainsKey(licensePlate))
             {
                 var thingHandler = _handlers[licensePlate];
 
-                thingHandler.DataHandler -= VehicleThingRideDataChanged; //local handler unsubscribe
+                thingHandler.DataHandler -= ThingDataChanged; //local handler unsubscribe
 
                 thingHandler.DataHandler -= eventHandler; //needed
 
@@ -70,12 +70,12 @@
         }
 
 
-        public Task Shutdown(EventHandler<RideData> eventHandler)
+        public Task Shutdown(EventHandler<ThingData> eventHandler)
         {
             var vehicles = GetVehicles();
             foreach (var vehicle in vehicles)
             {
-                UnRegisterVehicle(vehicle, eventHandler);
+                UnRegisterThing(vehicle, eventHandler);
             }
 
             return Task.FromResult(true);

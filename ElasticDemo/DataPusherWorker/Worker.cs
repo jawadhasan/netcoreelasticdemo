@@ -12,7 +12,7 @@ namespace DataPusherWorker
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-       
+
         private readonly Fleet _fleet;
 
         private readonly IDataProcessor _dataProcessor;
@@ -31,9 +31,9 @@ namespace DataPusherWorker
             _eventConsumer = eventConsumer;
         }
 
-        
-        //this method is called, when SQS message is recieved
-        public void SQSCallbackHandler(object sender, ExternalEvent eventPayload)
+
+        //this method is called, when an external message is recvd e.g. SQS message
+        public void eventCallbackHandler(object sender, ExternalEvent eventPayload)
         {
             var randomTemp = _random.NextInt64(50, 60) + _random.NextDouble();
 
@@ -55,13 +55,13 @@ namespace DataPusherWorker
                     Lon = -96.8319174
                 };
                 vehicle.Temperature = randomTemp;
-                
-                var task = Task.Factory.StartNew(async () => await _fleet.RegisterVehicle(vehicle, registeredCallbackHandler, HandleEvent), CancellationToken.None);
-                
+
+                var task = Task.Factory.StartNew(async () => await _fleet.RegisterThing(vehicle, registeredCallbackHandler, HandleEvent), CancellationToken.None);
+
             }
             else if (eventPayload.EventType == EventType.VehicleDeleted || eventPayload.EventType == EventType.StopVehicle)
             {
-                var result = _fleet.UnRegisterVehicle(eventPayload.LicensePlate, HandleEvent);
+                var result = _fleet.UnRegisterThing(eventPayload.LicensePlate, HandleEvent);
                 _logger.LogWarning($"Un-registered vehicle {eventPayload.LicensePlate} success {result}");
             }
             else if (eventPayload.EventType == EventType.Shutdown)
@@ -76,18 +76,17 @@ namespace DataPusherWorker
             _logger.LogWarning($"eventType {eventPayload.EventType} processed for {eventPayload.LicensePlate}");
         }
 
-    
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-           await _dataProcessor.Setup();
+            await _dataProcessor.Setup();
 
-           await InitializeFleet(stoppingToken); //initialize with test data
+            await InitializeFleet(stoppingToken); //initialize with test data
 
-            // Starting event consumer
-            _eventConsumer.Start(SQSCallbackHandler);
+
 
             if (stoppingToken.IsCancellationRequested)
             {
@@ -104,23 +103,29 @@ namespace DataPusherWorker
 
         private async Task InitializeFleet(CancellationToken stoppingToken)
         {
-            var tasksList = new List<Task>();
+            #region testCode
+            //var tasksList = new List<Task>();
 
-            var vehiclesList = InMemoryVehiclesData.GetTripConfigs(); //TODO: e.g. load from DB or from a REST endpoint etc.
-            foreach (var vehicle in vehiclesList)
-            {
-                var task = Task.Factory.StartNew(async () => await _fleet.RegisterVehicle(vehicle, registeredCallbackHandler, HandleEvent), stoppingToken);
-                tasksList.Add(task);
-            }
+            //var vehiclesList = InMemoryVehiclesData.GetTripConfigs(); //TODO: e.g. load from DB or from a REST endpoint etc.
+            //foreach (var vehicle in vehiclesList)
+            //{
+            //    var task = Task.Factory.StartNew(async () => await _fleet.RegisterThing(vehicle, registeredCallbackHandler, HandleEvent), stoppingToken);
+            //    tasksList.Add(task);
+            //}
+            #endregion
+
+            // Starting event consumer
+            _eventConsumer.Start(eventCallbackHandler);
         }
 
 
         //EventHandling and Callback
-        private async void HandleEvent(object sender, RideData e)
+        private async void HandleEvent(object sender, ThingData e)
         {
-           await _dataProcessor.Process(e);
+            //TODO: This is an hook-point, if app want to process the data (currently no need as we are injecting dataProcessor to fleet)
+            //await _dataProcessor.Process(e);
 
-           _logger.LogDebug($"NewData event-Handler {e.LicensePlate}");
+            _logger.LogDebug($"NewData event-Handler {e.LicensePlate}");
         }
         private void registeredCallbackHandler(object sender, RegisterInfo e)
         {

@@ -1,20 +1,27 @@
 ﻿namespace IotFleet;
 
-
 //client app need to inject implementation
 public interface IDataProcessor
 {
-    Task Process(RideData rideData);
+    Task Process(ThingData thingData);
     Task Setup();
+}
+public class ThingData
+{
+    public string LicensePlate { get; set; } // PK of Master Entity
+    public int RideId { get; set; }
+    public double Temperature { get; set; }
+    public long Ts { get; set; }
+    public double Lat { get; set; }
+    public double Lon { get; set; }
 }
 
 //sample persistence
-public class ConsoleDataProcessor : IDataProcessor
-{
-    public async Task Process(RideData rideData)
+public class ConsoleDataProcessor : IDataProcessor{
+    public async Task Process(ThingData thingData)
     {
 
-        Console.WriteLine($"RideData received in fleet {rideData.LicensePlate}: {rideData.Temperature}");
+        Console.WriteLine($"ThingData received in fleet {thingData.LicensePlate}: {thingData.Temperature}");
         await Task.FromResult(0);
     }
 
@@ -24,14 +31,10 @@ public class ConsoleDataProcessor : IDataProcessor
     }
 }
 
-
-
-
 public class RegisterInfo
 {
     public string LicensePlate { get; set; }
 }
-
 
 public class VehicleData
 {
@@ -39,15 +42,6 @@ public class VehicleData
     public Coordinates StartCoordinates { get; set; }
     public Coordinates EndCoordinates { get; set; }
     public double Temperature { get; set; }
-}
-public class RideData
-{
-    public string LicensePlate { get; set; } // PK of Master Entity
-    public int RideId { get; set; }
-    public double Temperature { get; set; }
-    public long Ts { get; set; }
-    public double Lat { get; set; }
-    public double Lon { get; set; }
 }
 public class Coordinates
 {

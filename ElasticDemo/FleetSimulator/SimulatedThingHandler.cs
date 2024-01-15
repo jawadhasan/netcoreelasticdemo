@@ -3,20 +3,20 @@
 
     public interface IThingHandler
     {
-        public event EventHandler<RideData> DataHandler;
+        public event EventHandler<ThingData> DataHandler;
         Task Start(VehicleData vehicleData);
         Task Stop();
     }
-    public class SimulatedVehicleHandler : IThingHandler
+    public class SimulatedThingHandler : IThingHandler
     {
         private readonly RideSimulator _thing;
 
-        public event EventHandler<RideData> DataHandler;
+        public event EventHandler<ThingData> DataHandler;
         public VehicleData VehicleData { get; private set; }
 
-        public List<RideData> History { get; private set; } = new();
+        public List<ThingData> History { get; private set; } = new();
 
-        public SimulatedVehicleHandler()
+        public SimulatedThingHandler()
         {
             
             _thing = new RideSimulator();
@@ -26,7 +26,7 @@
 
 
         //the bridge
-        private void DataChangedHandler(object sender, RideData e)
+        private void DataChangedHandler(object sender, ThingData e)
         {
             History.Add(e); //store to local history
 

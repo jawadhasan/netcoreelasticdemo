@@ -17,13 +17,13 @@ namespace DataPusherWorker.Services
             _logger = logger;
             _elasticClient = elasticClient;
         }
-        public async Task Process(RideData rideData)
+        public async Task Process(ThingData thingData)
         {
-            _logger.LogInformation($"{DateTime.Now} {rideData.LicensePlate} {rideData.Temperature} {rideData.Lat} {rideData.Lon}");
+            _logger.LogInformation($"{DateTime.Now} {thingData.LicensePlate} {thingData.Temperature} {thingData.Lat} {thingData.Lon}");
            
             //...TODO use elasticclient
 
-           await _elasticClient.IndexDocumentAsync(rideData);
+           await _elasticClient.IndexDocumentAsync(thingData);
         }
 
         public Task Setup()

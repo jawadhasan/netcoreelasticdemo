@@ -4,7 +4,7 @@ namespace IotFleet
 {
     public class RideSimulator
     {
-        public event EventHandler<RideData> NewDataHandler;
+        public event EventHandler<ThingData> NewDataHandler;
         protected VehicleData TripConfigs { get; private set; }
         protected bool _keepRunning { get; private set; } = true;
         
@@ -41,7 +41,7 @@ namespace IotFleet
 
                 var ts = new DateTime(nd).Ticks;
 
-                var data = new RideData()
+                var data = new ThingData()
                 {
                     LicensePlate = TripConfigs.LicensePlate,
                     RideId = rideId,
