@@ -6,12 +6,12 @@
 
         private readonly Dictionary<string, IThingHandler> _handlers = new();
 
-        private readonly IPersistenceService _persistenceSRV; //shall be injected by client-app (host)
+        private readonly IDataProcessor _dataProcessor; //shall be injected by client-app (host)
 
         //ctor
-        public Fleet(IPersistenceService persistenceSRV)
+        public Fleet(IDataProcessor dataProcessor)
         {
-            _persistenceSRV = persistenceSRV;
+            _dataProcessor = dataProcessor;
         }
 
         public async Task RegisterVehicle(VehicleData vehicleData, Action<object, RegisterInfo> registeredCallBack, EventHandler<RideData> eventHandler)
@@ -45,7 +45,7 @@
 
         private async void VehicleThingRideDataChanged(object sender, RideData e)
         {
-            await _persistenceSRV.Save(e); // _elasticClientService
+            await _dataProcessor.Process(e);
         }
 
 
@@ -61,7 +61,7 @@
 
                 thingHandler.Stop();
 
-               var result = _handlers.Remove(licensePlate);
+                var result = _handlers.Remove(licensePlate);
 
                 return result;
             }
@@ -93,10 +93,6 @@
         {
             return _handlers.Keys.ToList();
         }
-
-
-
-
 
     }
 }

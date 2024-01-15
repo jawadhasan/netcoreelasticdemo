@@ -2,20 +2,34 @@
 
 
 //client app need to inject implementation
-public interface IPersistenceService
+public interface IDataProcessor
 {
-    public Task Save(RideData rideData);
+    Task Process(RideData rideData);
+    Task Setup();
 }
 
 //sample persistence
-public class ConsolePersistence : IPersistenceService
+public class ConsoleDataProcessor : IDataProcessor
 {
-    public async Task Save(RideData rideData)
+    public async Task Process(RideData rideData)
     {
 
         Console.WriteLine($"RideData received in fleet {rideData.LicensePlate}: {rideData.Temperature}");
         await Task.FromResult(0);
     }
+
+    public async Task Setup()
+    {
+        Console.WriteLine($"ConsolePersistence setup() called");
+    }
+}
+
+
+
+
+public class RegisterInfo
+{
+    public string LicensePlate { get; set; }
 }
 
 

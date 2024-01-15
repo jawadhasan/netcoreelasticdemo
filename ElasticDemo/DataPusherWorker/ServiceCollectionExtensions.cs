@@ -1,5 +1,6 @@
 ﻿using System;
 using DataPusherWorker.Services;
+using IotFleet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
@@ -45,7 +46,8 @@ namespace DataPusherWorker
                 //services.AddSingleton<DataProcessor>(client);  //services.AddSingleton(client);
 
                 //Console Registration
-                services.AddSingleton<DataProcessor, ConsoleDataProcessor>();
+                //services.AddSingleton<IDataProcessor, ConsoleDataProcessor>();
+                //services.AddSingleton<IDataProcessor, ElasticProcessor>();
 
             }
             catch (Exception ex)

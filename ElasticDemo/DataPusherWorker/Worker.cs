@@ -15,12 +15,12 @@ namespace DataPusherWorker
        
         private readonly Fleet _fleet;
 
-        private readonly DataProcessor _dataProcessor;
+        private readonly IDataProcessor _dataProcessor;
         private readonly IEventConsumer _eventConsumer;
 
         private readonly Random _random = new Random();
 
-        public Worker(ILogger<Worker> logger, Fleet fleet, DataProcessor dataProcessor, IEventConsumer eventConsumer)
+        public Worker(ILogger<Worker> logger, Fleet fleet, IDataProcessor dataProcessor, IEventConsumer eventConsumer)
         {
             _logger = logger;
 
@@ -31,8 +31,9 @@ namespace DataPusherWorker
             _eventConsumer = eventConsumer;
         }
 
-        //this method is called, when SQS message is recieved that a device is added.
-        public async void SQSCallbackHandler(object sender, ExternalEvent eventPayload)
+        
+        //this method is called, when SQS message is recieved
+        public void SQSCallbackHandler(object sender, ExternalEvent eventPayload)
         {
             var randomTemp = _random.NextInt64(50, 60) + _random.NextDouble();
 
@@ -83,22 +84,13 @@ namespace DataPusherWorker
 
            await _dataProcessor.Setup();
 
-            var tasksList = new List<Task>();
-            
-            //var vehiclesList = InMemoryVehiclesData.GetTripConfigs(); //TODO: e.g. can load from DB
-
-            //foreach (var vehicle in vehiclesList)
-            //{
-            //    var task = Task.Factory.StartNew(async() => await _fleet.RegisterVehicle(vehicle, registeredCallbackHandler, HandleEvent), stoppingToken);
-            //    tasksList.Add(task);
-            //}
+           await InitializeFleet(stoppingToken); //initialize with test data
 
             // Starting event consumer
             _eventConsumer.Start(SQSCallbackHandler);
 
             if (stoppingToken.IsCancellationRequested)
             {
-              
                 //shutdown fleet
                 await _fleet.Shutdown(HandleEvent);
 
@@ -107,6 +99,19 @@ namespace DataPusherWorker
             }
 
             _logger.LogWarning($"VehicleCount: {_fleet.GetVehicles().Count}");
+        }
+
+
+        private async Task InitializeFleet(CancellationToken stoppingToken)
+        {
+            var tasksList = new List<Task>();
+
+            var vehiclesList = InMemoryVehiclesData.GetTripConfigs(); //TODO: e.g. load from DB or from a REST endpoint etc.
+            foreach (var vehicle in vehiclesList)
+            {
+                var task = Task.Factory.StartNew(async () => await _fleet.RegisterVehicle(vehicle, registeredCallbackHandler, HandleEvent), stoppingToken);
+                tasksList.Add(task);
+            }
         }
 
 

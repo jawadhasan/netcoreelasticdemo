@@ -12,25 +12,8 @@ namespace DataPusherWorker.Services
 {
     //worker's services
 
-    public abstract class DataProcessor
-    {
-        public abstract Task Process(RideData rideData);
-        public abstract Task Setup();
-    }
-    public class ConsoleDataProcessor : DataProcessor
-    {
-        public override Task Process(RideData rideData)
-        {
-            Console.WriteLine($"ConsoleDataProcessor.Process Called {rideData.LicensePlate}: {rideData.Temperature}");
-            return Task.CompletedTask;
-        }
-        public override Task Setup()
-        {
-            Console.WriteLine($"ConsoleDataProcessor Setup Called");
-            return Task.CompletedTask;
-        }
-    }
-    public class WebSocketProcessor : DataProcessor
+
+    public class WebSocketProcessor : IDataProcessor
     {
         private readonly Uri _socketServer;
 
@@ -41,7 +24,7 @@ namespace DataPusherWorker.Services
             _socketServer = new Uri(url);
         }
 
-        public override async Task Setup()
+        public async Task Setup()
         {
             try
             {
@@ -54,7 +37,7 @@ namespace DataPusherWorker.Services
             }
         }
 
-        public override async Task Process(RideData rideData)
+        public async Task Process(RideData rideData)
         {
             try
             {

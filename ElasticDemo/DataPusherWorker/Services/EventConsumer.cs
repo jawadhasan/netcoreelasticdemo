@@ -62,7 +62,7 @@ namespace DataPusherWorker.Services
             {
                 while (_running)
                 {
-                    _logger.LogInformation("Polling for messages");
+                    _logger.LogDebug("Polling for messages");
 
                     // Receive messages
                     try
@@ -82,7 +82,7 @@ namespace DataPusherWorker.Services
                         {
                             string publisher = message.MessageAttributes["Publisher"].StringValue;
 
-                            _logger.LogInformation(" [x] Received {0} from '{1}'", message.Body, publisher);
+                            _logger.LogWarning(" [x] Received {0} from '{1}'", message.Body, publisher);
 
 
                             //callback with SQS Message Payload

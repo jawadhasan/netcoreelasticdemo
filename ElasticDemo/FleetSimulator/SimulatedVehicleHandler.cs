@@ -1,12 +1,12 @@
 ﻿namespace IotFleet
 {
+
     public interface IThingHandler
     {
         public event EventHandler<RideData> DataHandler;
         Task Start(VehicleData vehicleData);
         Task Stop();
     }
-
     public class SimulatedVehicleHandler : IThingHandler
     {
         private readonly RideSimulator _thing;
